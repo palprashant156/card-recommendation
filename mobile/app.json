@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "CardWise",
+    "slug": "cardwise",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "cardwise",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#FAF8F5"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cardwise.app"
+    },
+    "android": {
+      "package": "com.cardwise.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#101B2D"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-asset"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

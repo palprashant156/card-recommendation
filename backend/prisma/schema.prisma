@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CardProduct {
+  id        String   @id
+  issuer    String
+  product   String
+  network   String
+  type      String
+  highlight String?
+  popular   Boolean  @default(false)
+  rules     RewardRule[]
+  offers    Offer[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([issuer])
+}
+
+model Merchant {
+  id             String  @id
+  name           String
+  category       String
+  supportsPrime  Boolean @default(false)
+  rules          RewardRule[]
+  offers         Offer[]
+}
+
+model RewardRule {
+  id            String   @id
+  cardId        String
+  card          CardProduct @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  merchantId    String
+  merchant      Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  kind          String
+  ratePct       Float
+  primeRatePct  Float?
+  capPerTxn     Float?
+  minTxn        Float?
+  pointValueRs  Float?
+  validTill     String
+  verified      Boolean  @default(false)
+  sourceUrl     String?
+  lastVerified  String
+  exclusionNote String?
+  version       Int      @default(1)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([cardId, merchantId])
+}
+
+model Offer {
+  id           String @id
+  merchantId   String
+  merchant     Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  cardId       String
+  card         CardProduct @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  title        String
+  benefit      String
+  minTxn       Float?
+  maxDiscount  Float?
+  expiry       String
+  status       String
+  exclusions   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([merchantId, cardId])
+}
+
+model AppUser {
+  id        String   @id @default(cuid())
+  deviceId  String   @unique
+  cardIds   String[] @default([])
+  prime     Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  history   RecommendationHistory[]
+}
+
+model RecommendationHistory {
+  id           String   @id @default(cuid())
+  userId       String?
+  user         AppUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  merchantId   String
+  merchantName String
+  amount       Float
+  cardId       String
+  cardLabel    String
+  benefit      Float
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  kind      String
+  message   String
+  contact   String?
+  createdAt DateTime @default(now())
+}
